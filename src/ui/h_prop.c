@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "h_prop.h"
 #include "read_config.h"
+#include "qrgen.h"
 
 
 #define BUFSIZE 2048
@@ -61,6 +62,8 @@ static char accepted_macs[BUFSIZE];
 
 static const char* g_ssid=NULL;
 static const char* g_pass=NULL;
+
+static char* qr_image_path;
 
 //config_t cfg;
 
@@ -98,9 +101,9 @@ const char *build_wh_start_command(char *iface_src, char *iface_dest, char *ssid
 
 const char *build_wh_mkconfig_command(ConfigValues* cv){
 
-    const char* a=get_config_file(CONFIG_FILE_NAME);
+    const char* config_ffile_name=get_config_file(CONFIG_FILE_NAME);
 
-    snprintf(cmd_mkconfig, BUFSIZE, "%s %s %s %s '%s' '%s' %s %s",SUDO, CREATE_AP, cv->iface_wifi, cv->iface_inet, cv->ssid, cv->pass,MKCONFIG,a);
+    snprintf(cmd_mkconfig, BUFSIZE, "%s %s %s %s '%s' '%s' %s %s",SUDO, CREATE_AP, cv->iface_wifi, cv->iface_inet, cv->ssid, cv->pass,MKCONFIG,config_ffile_name);
 
     if(cv->freq!=NULL){
         strcat(cmd_mkconfig," --freq-band ");
@@ -115,6 +118,9 @@ const char *build_wh_mkconfig_command(ConfigValues* cv){
 
     if(cv->hidden!=NULL && (strcmp(cv->hidden,"1") == 0))
         strcat(cmd_mkconfig," --hidden ");
+
+    if(cv->no_haveged!=NULL && (strcmp(cv->no_haveged,"1") == 0))
+        strcat(cmd_mkconfig," --no-haveged ");
 
     if(cv->channel!=NULL && (strcmp(cv->channel,"default") != 0) && (cv->freq==NULL||(strcmp(cv->freq,"2.4") == 0)|| (strcmp(cv->freq,"5") == 0))){
 
@@ -133,6 +139,11 @@ const char *build_wh_mkconfig_command(ConfigValues* cv){
     if(cv->mac!=NULL) {
         strcat(cmd_mkconfig, " --mac ");
         strcat(cmd_mkconfig, cv->mac);
+    }
+
+    if(cv->gateway!=NULL) {
+        strcat(cmd_mkconfig, " --gateway ");
+        strcat(cmd_mkconfig, cv->gateway);
     }
 
     if(cv->mac_filter!=NULL && (strcmp(cv->mac_filter,"1") == 0)){
@@ -419,4 +430,91 @@ char** get_wifi_interface_list(int *length){
 
     return NULL;
 
+}
+
+char* generate_qr_image(char* ssid,char* type,char *password){
+    char cmd[BUFSIZE];
+
+    qr_image_path = "/tmp/wihotspot_qr.png";
+
+    // snprintf(cmd, BUFSIZE, "%s -s 10 -d 256 -o %s 'WIFI:S:%s;T:%s;P:%s;;' ","qrencode",qr_image_path, ssid,type,password);
+
+    // FILE *fp;
+
+    // char temp_buff[1048];
+
+    // if ((fp = popen(cmd, "r")) == NULL) {
+    //     printf("Error opening pipe!\n");
+        
+    // }
+
+
+    // while (fgets(temp_buff, sizeof(temp_buff), fp) != NULL) {
+    
+    //     printf("%s", temp_buff);
+    // }
+
+    // if (pclose(fp)) {
+    //     printf("Error executing qrencode\n");
+        
+    // }
+
+    snprintf(cmd, BUFSIZE, "WIFI:S:%s;T:%s;P:%s;;",ssid,type,password);
+
+    qr_to_png(cmd,qr_image_path);
+    
+    return qr_image_path;
+}
+
+Node get_connected_devices(char *PID)
+{
+    char cmd[BUFSIZE];
+    snprintf(cmd, BUFSIZE, "%s %s --list-clients %s", SUDO, CREATE_AP, PID);
+    FILE *fp;
+    Node l = (struct Device *)malloc(sizeof(struct Device));
+    Position head = l;
+    fp = popen(cmd, "r");
+    char line[BUFSIZE];
+
+    int _n = 0; //Device number
+    while (fgets(line, BUFSIZE, fp) != NULL)
+    {
+        if (strstr(line, "MAC") != NULL)
+            continue;
+
+        _n++;
+        int size = strlen(line);
+        int marker[3] = {0};
+        int n = 0;             // For marker
+        line[size - 1] = '\0'; // Remove "\n"
+        for (int i = 0; i < size; i++)
+        {
+            if (*(line + i) != ' ' && *(line + i + 1) == ' ')
+            {
+                // End
+                *(line + i + 1) = '\0';
+                i++;
+            }
+            if (*(line + i) == ' ' && *(line + i + 1) != ' ')
+            {
+                // Head
+                *(line + i) = '\0';
+                marker[++n] = i + 1;
+            }
+        }
+        l = add_device_node(l, _n, line, marker);
+    }
+    return head;
+}
+
+PtrToNode add_device_node(PtrToNode l, int number, char line[BUFSIZE], int marker[3])
+{
+    Node next = (PtrToNode)malloc(sizeof(struct Device));
+    strcpy(next->MAC, line);
+    strcpy(next->IP, line + marker[1]);
+    strcpy(next->HOSTNAME, line + marker[2]);
+    next->Number = number;
+    next->Next = NULL;
+    l->Next = next;
+    return next;
 }

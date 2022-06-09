@@ -1,9 +1,8 @@
 //
-// Created by lakinduakash on 13/04/19.
+// Created by lakinduakash on 18/10/21.
 //
-
 /*
-Copyright (c) 2019, lakinduaksh
+Copyright (c) 2021, lakinduaksh
         All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,51 +28,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  */
 
-#ifndef WIHOTSPOT_H_PROP_H
-#define WIHOTSPOT_H_PROP_H
+#ifndef WIHOTSPOT_QRGEN_H
+#define WIHOTSPOT_QRGEN_H
+
+#include <qrencode.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define INCHES_PER_METER (100.0/2.54)
+
+static int writePNG(QRcode *qrcode, const char *outfile);
+
+void qr_to_png(const char *qrstring,const char *outfile);
+
+#ifdef __cplusplus
+}
+#endif
 
 
-#include "read_config.h"
 
-typedef struct Device *PtrToNode;
-struct Device
-{
-        char HOSTNAME[2048];
-        char IP[2048];
-        char MAC[2048];
-        unsigned int Number;
-        PtrToNode Next;
-}; // Head node is null
-typedef PtrToNode Position;
-typedef PtrToNode Node;
-
-static int parse_output(const char *);
-
-const char *build_wh_start_command(char *, char *, char *, char *);
-const char *build_wh_from_config(void);
-
-int startShell(const char *);
-
-int write_config(char *);
-
-int get_h_running_info(char** a);
-static int init_get_running();
-
-static int init_get_interface_list();
-char** get_interface_list(int*);
-const char* build_kill_create_ap_command(char* pid);
-
-const char *build_wh_mkconfig_command(ConfigValues* cv);
-
-char** get_wifi_interface_list(int *length);
-
-void write_accepted_macs(char* filename, char* accepted_macs);
-
-char * read_mac_filter_file(char * filename);
-
-char* generate_qr_image(char* ssid,char* type,char *password);
-
-Node get_connected_devices(char *PID);
-PtrToNode add_device_node(Node l, int number, char *line, int marker[3]);
-
-#endif //WIHOTSPOT_H_PROP_H
+#endif //WIHOTSPOT_QRGEN_H

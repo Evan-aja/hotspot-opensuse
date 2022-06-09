@@ -70,4 +70,20 @@ static void set_error_text(char * text);
 
 gchar* get_accepted_macs();
 
+static void set_connected_devices_label(); // new
+
+static void on_refresh_clicked(GtkWidget *widget, gpointer data);
+
+static void on_cb_open_toggle(GtkWidget *widget, gpointer data);
+
+static void on_cb_mac_toggle(GtkWidget *widget, gpointer data);
+
+static void on_cb_channel_toggle(GtkWidget *widget, gpointer data);
+
+static void on_cb_mac_filter_toggle(GtkWidget *widget, gpointer data);
+
+static void on_cb_gateway_toggle(GtkWidget *widget, gpointer data);
+
+static void clear_connecetd_devices_list();
+
 #endif //WIHOTSPOT_UI_H

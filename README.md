@@ -1,25 +1,31 @@
 ## Linux Wifi Hotspot
 
-[![Build Status](https://travis-ci.com/lakinduakash/linux-wifi-hotspot.svg?branch=master)](https://travis-ci.com/lakinduakash/linux-wifi-hotspot)
+<!-- [![Build Status](https://travis-ci.com/lakinduakash/linux-wifi-hotspot.svg?branch=master)](https://travis-ci.com/lakinduakash/linux-wifi-hotspot) -->
+![Build](https://github.com/lakinduakash/linux-wifi-hotspot/actions/workflows/build.yml/badge.svg)
 [![Gitter](https://badges.gitter.im/linux-wihotspot/community.svg)](https://gitter.im/linux-wihotspot/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flakinduakash%2Flinux-wifi-hotspot.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Flakinduakash%2Flinux-wifi-hotspot?ref=badge_shield)
 
-### Update
-* Add MAC filter
-* Support enabling IEEE80211n and IEEE80211ac
-* Release Debian package
+### What's new
+* Share wifi via QR code
+* UI improvements
+* Show the connected devices
+* Able to customize gateway address from GUI
 
 ### Features
  
 * Share your wifi like in Windows - Use wifi and enable hotspot at the same time.
-* Share access point from any network interface
+* Share a wifi access point from any network interface
+* Share wifi via QR code
 * MAC filter
+* View connected devices
 * Includes Both command line and gui.
 * Support both 2.4GHz and 5GHz (Need to be compatible with your wifi adapter). Ex: You have connected to the 5GHz network and share a connection with 2.4GHz.
-* Select Channel.
+* Customise wifi Channel, Change MAC address, etc.
 * Hide SSID
+* customize gateway IP address
+* Enable IEEE 80211n, IEEE 80211ac modes
 
-![screenshot](docs/sc2.png)
+![screenshot](docs/sc4.png)
 
 
 ### Command line help and documentation
@@ -30,20 +36,22 @@ If you only need the command-line without GUI run `make install-cli-only` as roo
 
 ### Notes
 
-Sometimes there are troubles with **5Ghz bands** due to some vendor restrictions. If you cannot start hotspot while you are connected to 5Ghz band, Unselect **Auto** and select **2.4Ghz** in frequency selection.
+- Sometimes there are troubles with **5Ghz bands** due to some vendor restrictions. If you cannot start hotspot while you are connected to 5Ghz band, Unselect **Auto** and select **2.4Ghz** in frequency selection.
 
-If any problems with **RealTeK Wifi Adapters** see [this](docs/howto/realtek.md)
+- If any problems with **RealTeK Wifi Adapters** see [this](docs/howto/realtek.md)
 
-### Installation
+- **Unable to allocate IP: firewalld issue:** Please check for potential fixes: [#209](https://github.com/lakinduakash/linux-wifi-hotspot/issues/209) [#166](https://github.com/lakinduakash/linux-wifi-hotspot/issues/166)
+
+## Installation
 
 #### Debian/Ubuntu
 
 Download the debian package from latest [release](https://github.com/lakinduakash/linux-wifi-hotspot/releases/latest)
-<!-- - [linux-wifi-hotspot_3.5.1_amd64.deb](https://github.com/lakinduakash/linux-wifi-hotspot/releases/download/v3.5.1/linux-wifi-hotspot_3.5.1_amd64.deb) -->
 
 **OR**
 
 ```bash
+# For ubuntu only
 sudo add-apt-repository ppa:lakinduakash/lwh
 sudo apt install linux-wifi-hotspot
 
@@ -51,13 +59,11 @@ sudo apt install linux-wifi-hotspot
 
 #### Arch based distributions
 
-Install with:
+Linux Wifi Hotspot is available as an [AUR package](https://aur.archlinux.org/packages/linux-wifi-hotspot/). You can install it manually or with your favourite AUR helper.  
+For example, if you use `yay` you can do:  
+`yay -S linux-wifi-hotspot`
 
-```bash
-yay -S linux-wifi-hotspot
-```
-
-### Dependencies
+## Dependencies
 
 #### General
 * bash
@@ -84,11 +90,18 @@ install it using your distro's package manager_
 * pkg-config
 * gtk
 * libgtk-3-dev
+* libqrencode-dev (for qr code generation)
+* libpng-dev (for qr code generation)
 
 On Ubuntu or debian install dependencies by,
 
 ```bash
-sudo apt install -y libgtk-3-dev build-essential gcc g++ pkg-config make hostapd
+sudo apt install -y libgtk-3-dev build-essential gcc g++ pkg-config make hostapd libqrencode-dev libpng-dev
+```
+
+On Fedora/CentOS/Red Hat Enterprise Linux/Rocky Linux/Oracle Linux
+```bash
+sudo dnf install -y gtk3-devel gcc gcc-c++ kernel-devel pkg-config make hostapd qrencode-devel libpng-devel
 ```
 
 ## Installation
@@ -127,6 +140,12 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for more info.
 
 ## Disclaimer
 <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/lakinduakash/linux-wifi-hotspot.svg)](https://starchart.cc/lakinduakash/linux-wifi-hotspot)
+
 
 ## License
 FreeBSD

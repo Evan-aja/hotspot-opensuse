@@ -8,9 +8,14 @@ install:
 	@echo "Installing..."
 	cd src && $(MAKE) install
 
+test:
+	mkdir -p build
+	@echo "Testing..."
+	cd test && $(MAKE)
+
 install-cli-only:
 	@echo "Installing command line interface only..."
-	cd src/scripts && $(MAKE) install
+	cd src/scripts && $(MAKE) install-cli-only
 
 uninstall:
 	@echo "Uninstalling..."
@@ -19,7 +24,8 @@ uninstall:
 clean-old:
 	cd src && $(MAKE) clean-old
 
-.PHONY: clean
+.PHONY: clean test
 
 clean:
 	cd src && $(MAKE) clean
+	cd test && $(MAKE) clean
